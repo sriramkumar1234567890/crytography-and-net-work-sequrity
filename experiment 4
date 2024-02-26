@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+// Function to generate the key table
+void generateKeyTable(char *key, char keyTable[26][26]) {
+    int i, j, keyLen, k = 0;
+    keyLen = strlen(key);
+
+    // Fill the key table with the key
+    for (i = 0; i < 26; i++) {
+        for (j = 0; j < 26; j++) {
+            keyTable[i][j] = key[(k % keyLen)] + j;
+            if (keyTable[i][j] > 'Z') {
+                keyTable[i][j] -= 26; // Wrap around if the value exceeds 'Z'
+            }
+            k++;
+        }
+    }
+}
+
+// Function to encrypt a single character using the key table
+char encryptCharacter(char plainChar, char keyChar, char keyTable[26][26]) {
+    if (isalpha(plainChar)) {
+        char ch = toupper(plainChar);
+        return keyTable[ch - 'A'][keyChar - 'A'];
+    } else {
+        return plainChar;
+    }
+}
+
+// Function to encrypt plaintext using the key table
+void polyalphabeticEncrypt(char *plaintext, char *key, char keyTable[26][26]) {
+    int i;
+    char encrypted[1000] = "";
+    char *ptr = plaintext;
+
+    for (i = 0; i < strlen(plaintext); i++) {
+        encrypted[i] = encryptCharacter(plaintext[i], key[i % strlen(key)], keyTable);
+    }
+
+    printf("Encrypted text: %s\n", encrypted);
+}
+
+int main() {
+    char key[100], plaintext[1000];
+    char keyTable[26][26];
+
+    printf("Enter the key: ");
+    scanf("%s", key);
+
+    printf("Enter the plaintext: ");
+    scanf(" %[^\n]", plaintext); // Read the entire line including spaces
+
+    // Generate the key table
+    generateKeyTable(key, keyTable);
+
+    // Encrypt the plaintext
+    polyalphabeticEncrypt(plaintext, key, keyTable);
+
+    return 0;
+}
